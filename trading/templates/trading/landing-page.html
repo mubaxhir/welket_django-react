@@ -1,0 +1,214 @@
+{% extends "trading/base.html" %}
+{% load static %}
+
+{% block navbar %}
+
+{% endblock navbar %}
+<!-- Start Main -->
+{% block main %}
+<!-- Start Signup Form -->
+
+<main>
+  <div class="container signup-journey">
+    <div class="row signup-block">
+      <!-- left sidebar -->
+      <div class="col-md-6">
+
+        <div class="row sign-up-left">
+          <div class="col-md-12">
+            <div class="logo-blue">
+              <!-- <img src="{% static 'trading/images/lg.png' %}" alt="logo"> -->
+              <span>CONXR</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row sign-up-right">
+          <div class="col-md-12">
+            <h2>
+              <!-- <strong>C</strong>ONNECTING <strong>M</strong>ILLIONS! -->
+              African social network connecting friends nearby and around the whole world!
+            </h2>
+          </div>
+        </div>
+    
+
+      </div>
+      <!-- left side ends here -->
+      <!-- right sidebar -->
+      <div class="col-md-6 sign-up-two">
+        <div class="sing-log-wrap">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-area">
+                  <div class="form-sing">
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li role="presentation"><a href="#login" aria-controls="Log In" class="active" role="tab"
+                          data-toggle="tab">Sign In</a></li>
+                      <li role="presentation"><a href="#profile" aria-controls="profile" role="tab"
+                          data-toggle="tab">Sign Up</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+                      <div role="tabpanel" class="tab-pane active form-are" id="login">
+                        <form method="post" action="{% url 'login' %}">
+                        {% csrf_token %}
+                          <div class="form-bor">
+                            <div class="form-input-group">
+                              <label for="">Username</label>
+                              <input type="text" name="username" placeholder="Username">
+                            </div>
+
+                            <div class="form-input-group">
+                              <label for="">Password</label>
+                              <input type="password" name="password" placeholder="Password">
+                            </div>
+                            <div class="form-input-checkbox">
+                              <input type="checkbox" id="test1" />
+                              <label for="test1">Keep me Signed in</label>
+                            </div>
+                            <div class="form-input-group">
+                              <button type="submit" >Sign in</button>
+                            </div>
+                          </div>
+
+                          <a href="#" class="forgot-pass" data-target="#psmodal" data-toggle="modal">Forgot
+                            Password?</a>
+                        </form>
+
+                      </div>
+                      <div role="tabpanel" class="tab-pane" id="profile">
+                        <form action="{% url 'register' %}" method="POST" >
+                        {% csrf_token %}
+                        <div class="row">
+                        <div class="col-sm-12">
+                            {% if messages %}
+                              {% for message in messages %}
+                              <div class="alert alert-{{message.tags}} alert-dismissible">
+                                <button class="close" type="button" data-dismiss="alert">×</button>
+                                <i class="fa fa-warning"></i> &nbsp;&nbsp;&nbsp;{{message}}
+                              </div>
+                              {% endfor %}
+                            {% endif %}
+                        </div>
+                      </div>
+
+                          <div class="form-bor">
+                            <div class="form-input-group">
+                              <label for="">Username</label>
+                                  <input type="text" name="username" placeholder="Username">
+
+                                {% comment %} <div class="col-md-6">
+                                  <input type="text" name="lst-username" placeholder="Last Name">
+                                </div> {% endcomment %}
+                              </div>
+                            </div>
+
+                            <div class="form-input-group">
+                              <label for="">Email</label>
+                              <input type="text" name="email" placeholder="Email">
+                              <!-- <input type="text" name="re-email" placeholder="Confirm Email"> -->
+                            </div>
+
+                            <div class="form-input-group">
+                              <label for="">First Name</label>
+                              <input type="text" name="first_name" placeholder="First Name">
+                              <!-- <input type="text" name="re-email" placeholder="Confirm Email"> -->
+                            </div>
+
+                            <div class="form-input-group">
+                              <label for="">Last Name</label>
+                              <input type="text" name="last_name" placeholder="Last Name">
+                              <!-- <input type="text" name="re-email" placeholder="Confirm Email"> -->
+                            </div>
+
+                            <div class="form-input-group">
+                              <label for="">Password</label>
+                              <input type="password" name="password1" placeholder="Password">
+                              <input type="password" name="password2" class="mt-3" placeholder="Confirm Password">
+                            </div>
+
+
+                            <div class="form-input-group">
+                              <button type="submit">Sign Up</button>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!--modal-->
+<!-- Modal -->
+<div class="modal fade" id="psmodal" tabindex="-1" role="dialog" aria-labelledby="psmodalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="psmodalTitle">Reset your password</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'forgot_password' %}"  method="POST" class="common-form">
+        {% csrf_token %} 
+          <div class="form-bor">
+            <div class="form-input-group">
+              <label for="">E-mail address</label>
+              <input type="email" name="email" placeholder="E-mail address">
+            </div>
+
+            <div class="form-input-group">
+              <button type="submit">Send Code</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="otpmodal" tabindex="-1" role="dialog" aria-labelledby="otpmodalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="otpmodalTitle">Email verification</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex justify-content-center align-items-center">
+          <div class="card py-5 px-3">
+              <h5 class="m-0">Email verification</h5><span class="mobile-text">Enter the code we just send on your mobile phone <b class="text-danger">+91 86684833</b></span>
+              <div class="d-flex flex-row mt-5"><input type="text" class="form-control" autofocus=""><input type="text" class="form-control"><input type="text" class="form-control"><input type="text" class="form-control"></div>
+              <div class="text-center mt-5"><span class="d-block mobile-text">Don't receive the code?</span><span class="font-weight-bold text-danger cursor">Resend</span></div>
+          </div>
+      </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- End Signup Form -->
+{% endblock main %}
+<!-- End Main -->
+
+{% block footer %}
+{% endblock %}

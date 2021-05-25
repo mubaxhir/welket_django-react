@@ -1,0 +1,542 @@
+<!-- inherits repeated elements from base.html -->
+{% extends "trading/base.html" %}
+
+<!-- Load Static Files -->
+{% load static %}
+
+{% load break %}
+<!-- Load crispy forms -->
+{% load crispy_forms_tags %}
+<!-- load template tag -->
+
+<!-- Access username variable, doesn't need added to view because User is built-in to Django -->
+
+{% block bodytag %}
+{% endblock bodytag %}
+
+{% block navbar %}
+{% include 'trading/navbar.html' %}
+{% endblock navbar %}
+
+
+{% block main %}
+
+<style>
+  .hrx {
+    color: #000;
+    background-color: #000;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+</style>
+
+<div>
+  <div>
+    <!-- padding left -->
+    <div>
+
+      <div class="glass-effect container text-white" style="margin-top: 80px; padding: 35px;">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{message.tags}} alert-dismissible">
+          <button class="close" type="button" data-dismiss="alert">×</button>
+          <i class="fa fa-warning"></i> &nbsp;&nbsp;&nbsp;{{message}}
+        </div>
+        {% endfor %}
+        {% endif %}
+        <h5 style="text-align: center; color: #000;">Create whats on your mind</h5>
+        <hr />
+        <form method="POST" class="form-group" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="form-group">
+            <label>What's on your mind?<span style="color: red;">*</span> </label>
+            <textarea name="content" class="form-control"></textarea>
+          </div>
+          <center>
+            <div class="form-group">
+              <label class="btn btn-outline-info fa fa-image">&nbsp;&nbsp;Add Image
+                <input type="file" accept="image/*" name="img" placeholder="Share Image" style="color: black;">
+              </label>
+
+              <label class="btn btn-outline-info fa fa-file-video-o">&nbsp;&nbsp;Add Video&nbsp;
+                <input type="file" accept="video/*" name="video" placeholder="Share  Video" style="color: black;">
+              </label>
+            </div>
+          </center>
+
+          <center>
+            <input type="submit" class="btn btn-large btn-primary"
+              style="padding-left: 60px; padding-right: 60px;">
+          </center>
+        </form>
+        <br />
+      </div>
+      <br />
+    </div>
+
+    <!-- padding right -->
+  </div>
+  <br /><br />
+  <!-- post panel ends here -->
+
+  {% if empty == 1 %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alert alert-info alert-dismissable">
+          <p class="center text-center">
+            <strong>You have't posted anything yet!</strong>
+          </p>
+        </div>
+      </div>
+
+   </div>
+  </div>
+  {% endif %}
+
+  {% for a, post in posts %}
+  {% if a %}
+
+  <div class="container">
+    <div class="row justify-content-between">
+      <div class="col-md-10">
+        <div class="card" style="background-color: lightblue;">
+          <div class="card-body" onclick="window.open('/count-clicks/{{post.id}}', '_blank')">
+            <div class="container">
+              <div class="row">
+                <div class="col-md-4 text-center">
+                  {% if ad %}
+                  <p><strong>
+                      Ad posted by <a href="{% url 'user_profile' %}">{{request.user}}</a>
+                    </strong>
+                    {% endif %}
+                  <p style="color: #000;"><strong>
+                      {{post.content }}
+
+
+                    </strong>
+                  </p>
+                </div>
+                {% if post.img %}
+                <div class="col-md-12 p-0 rounded">
+
+                  <img src="{{post.img.url}}" style="width: 100%;">
+                  <a href={{post.linked}}>{{post.linked}}</a>
+
+                </div>
+                {% endif %}
+                {% if post.video %}
+                <div class="col-md-12 p-0">
+                  <video width="auto" height="180px" loop autoplay muted>
+                    <source src="{{post.video.url}}">
+                  </video>
+                  <a href={{post.linked}}></a>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+ {% elif request.user|shared_post:post.id %}
+ {% comment %} {% with shared_post:post.id as shares %} {% endcomment %}
+
+  <div class="container section-one glass-effect" style="padding: 20px;">
+    <div class="row">
+
+      <div class="col-md-12 position-relative">
+        <button class="trash-ico trash-updated-ico"><img  class="fa fa-trash-o" src="/static/trading/images/CONXR_POST_LOGO.PNG"></img></button>
+        <!-- <form data_id="{{post.id}}" id="post-form">
+          <input type="submit" value="Reference Check" id="edit_foo" class="btn btn-success">
+        </form> -->
+      {% for shares in user|shared_post:post.id %}
+        <div class="info-box">
+          <a href="#" class="info-left-block">
+            <img class="rounded-circle pull-left profile-img" src="{{ shares.user.profile.image.url }}"
+              alt="Card image cap">
+          </a>
+          <center class="activity-block">
+         
+            <div class="col-md-12">
+              <div class="wrap-date-username">
+                <p class="center align-content-center">
+                  <a href="{% url 'Userprofile' shares.user.id   %}">
+                  {{shares.user.first_name}}{{shares.user.last_name}}  @{{shares.user.username}}
+                  </a>
+                </p>
+                <p class="center">{{shares.time_since_posted}}</p>
+              </div>
+              <div class="wrap-home-comment">
+                <!-- start child post info -->
+
+         
+                <div class="info-box inherit-post">
+                  
+                  <center class="activity-block">
+        
+                    <div class="col-md-12  inherit-post-activity">
+                      <a href="#" class="info-left-block">
+                        <img class="rounded-circle pull-left profile-img" src="{{shares.post.author.profile.image.url}}" alt="Card image cap">
+                      </a>
+                      <div class="wrap-inherit">
+                      <div class="wrap-date-username">
+                        <p class="center align-content-center">
+                          <a href="/Userprofile/74/">
+                          {{shares.post.author.first_name}}{{shares.post.author.last_name}}  @{{shares.post.author.username}}
+                          </a>
+                        </p>
+                        <p class="center">{{shares.post.time_since_posted}}</p>
+                      </div>
+                      <div class="wrap-home-comment">
+                        <p></p>
+                        
+                        <p>{{shares.post.content}}</p>
+        
+        
+                      {% if shares.post.img %}
+                      <div class="col-md-12 p-0 rounded wrap-image-video">
+
+                        <img src="{{shares.post.img.url}}" style="width: 100%;">
+                        <a href={{shares.post.linked}}>{{shares.post.linked}}</a>
+
+                      </div>
+                      {% endif %}
+                      {% if shares.post.video %}
+                      <div class="col-md-12 p-0">
+                        <video width="auto" height="180px" loop autoplay muted>
+                          <source src="{{shares.post.video.url}}">
+                        </video>
+                        <a href={{shares.post.linked}}></a>
+                      </div>
+                      {% endif %}
+                        
+                        
+                       <p class="share-comment-wrap pl-4">
+                        <input type="hidden" value={{shares.post.id}} id='post' />
+                        {% if user|custom_filter:post.id %}
+                        <button onclick="like({% url 'share'  %},{{shares.post.id}})" id='like{{shares.post.id}}' value="False">
+                          <i id="icon-like-{{shares.post.id}}" class="fa fa-thumbs-up" aria-hidden="true"></i>
+                          <span id="count-likes-{{shares.post.id}}" class="count-likes">{{shares.post.likes_count}}</span>
+                        </button>
+                        {% else %}
+                        <button onclick="like({% url 'share'  %},{{shares.post.id}})" id='like{{shares.post.id}}' value="True">
+                          <i id="icon-like-{{shares.post.id}}" class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                          <span id="count-likes-{{shares.post.id}}" class="count-likes">{{shares.post.likes_count}}</span>
+                        </button>
+                        {% endif %}
+
+                        
+
+                        <!-- <button onclick="comment({% url 'share'  %})"><i class="fa fa-comment-o" aria-hidden="true"></i> <span class="count-comments">1223
+                          3
+                        </span>
+                        </button> -->
+
+                        <button onclick="all_comments({% url 'comments'  %},{{post.id}})">
+                          <i class="fa fa-comment-o" aria-hidden="true"></i> <span
+                            class="count-comments">{{post.comments_count }}
+                          </span>
+                        </button>
+
+                        <button onclick="share({% url 'share' %},{{post.id}})"><i class="fa fa-share-alt" aria-hidden="true"></i></button>
+
+                      {% if post.author == request.user %}
+                        <button onclick="del({% url 'delete'  %})" class="fa fa-trash-ico"><i class="fa fa-trash-o"
+                        aria-hidden="true"></i></button>
+                      {% endif %}
+
+
+                      </p>
+                      </div>
+                    </div>
+                    </div>
+                  
+                  </center>
+                </div>
+                <!-- end child post info -->
+             
+
+                {% comment %} <p>{{ post.title }}</p>
+                {% if post.content%}
+                <p>{{ post.content }}</p>
+
+
+                <p id="data"></p>
+                {% endif%}
+                {% if post.img %}
+                <div class="col-md-12 p-0 mt-3">
+                  <img src="{{post.img.url}}" class="wrap-img">
+                </div>
+                {% endif %}
+                {% if post.video %}
+                <div class="col-md-12 p-0 mt-3">
+                  <video width="auto" class="wrap-img" controls>
+                    <source src="{{post.video.url}}">
+                  </video>
+                </div>
+                {% endif %}
+                <p class="share-comment-wrap pl-4">
+                  <input type="hidden" value={{post.id}} id='post' />
+                  {% if user|custom_filter:post.id %}
+                  <button onclick="like({% url 'share'  %},{{post.id}})" id='like-{{post.id}}' value="False">
+                    <i id="icon-like-{{post.id}}" class="fa fa-thumbs-up" aria-hidden="true"></i>
+                    <span id="count-likes-{{post.id}}" class="count-likes">{{post.likes_count}}</span>
+                  </button>
+                  {% else %}
+                  <button onclick="like({% url 'share'  %},{{post.id}})" id='like{{post.id}}' value="True">
+                    <i id="icon-like-{{post.id}}" class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                    <span id="count-likes-{{post.id}}" class="count-likes">{{post.likes_count}}</span>
+                  </button>
+                  {% endif %}
+
+                   {% endcomment %}
+
+                  <!-- <button onclick="comment({% url 'share'  %})"><i class="fa fa-comment-o" aria-hidden="true"></i> <span class="count-comments">1223
+                    3
+                  </span>
+                  </button> -->
+
+                  {% comment %} <button onclick="all_comments({% url 'comments'  %},{{post.id}})">
+                    <i class="fa fa-comment-o" aria-hidden="true"></i> <span
+                      class="count-comments">{{post.comments_count }}
+                    </span>
+                  </button>
+
+                  <button onclick="share({% url 'share' %},{{post.id}})"><i class="fa fa-share-alt" aria-hidden="true"></i></button>
+
+                {% if post.author == request.user %}
+                  <button onclick="del({% url 'delete'  %})" class="fa fa-trash-ico"><i class="fa fa-trash-o"
+                  aria-hidden="true"></i></button>
+                {% endif %} {% endcomment %}
+
+
+                </p>
+              </div>
+            {% endfor %}
+            </div>
+          </center>
+        </div>
+
+      </div>
+
+
+
+
+    </div>
+  </div>
+{% elif not request.user|shared_post:post.id  %}
+<div class="container section-one glass-effect" style="padding: 20px;">
+    <div class="row">
+
+      <div class="col-md-12 position-relative">
+        <button class="trash-ico trash-updated-ico"><img  class="fa fa-trash-o" src="/static/trading/images/CONXR_POST_LOGO.PNG"></img></button>
+        <!-- <form data_id="{{post.id}}" id="post-form">
+          <input type="submit" value="Reference Check" id="edit_foo" class="btn btn-success">
+        </form> -->
+
+        <div class="info-box">
+          <a href="{% url 'Userprofile' post.author.id   %}" class="info-left-block">
+            <img class="rounded-circle pull-left profile-img" src="{{ post.author.profile.image.url }}"
+              alt="Card image cap">
+          </a>
+          <center class="activity-block">
+
+            <div class="col-md-12">
+              <div class="wrap-date-username">
+                <p class="center align-content-center">
+                  <a href="{% url 'Userprofile' post.author.id   %}">
+                  {{post.author.first_name}}{{post.author.last_name}}  @{{post.author}}
+                  </a>
+                </p>
+                <p class="center">{{post.time_since_posted}}</p>
+              </div>
+              {% comment %} <div class="wrap-home-comment"> {% endcomment %}
+                <!-- start child post info -->
+
+         
+
+                <p>{{ post.title }}</p>
+                {% if post.content%}
+                <p>{{ post.content }}</p>
+
+
+                <p id="data"></p>
+                {% endif%}
+                {% if post.img %}
+                <div class="col-md-12 p-0 mt-3">
+                  <img src="{{post.img.url}}" class="wrap-img">
+                </div>
+                {% endif %}
+                {% if post.video %}
+                <div class="col-md-12 p-0 mt-3">
+                  <video width="auto" class="wrap-img" controls>
+                    <source src="{{post.video.url}}">
+                  </video>
+                </div>
+                {% endif %}
+                <p class="share-comment-wrap pl-4">
+                  <input type="hidden" value={{post.id}} id='post' />
+                  {% if user|custom_filter:post.id %}
+                  <button onclick="like({% url 'share'  %},{{post.id}})" id='like{{post.id}}' value="False">
+                    <i id="icon-like-{{post.id}}" class="fa fa-thumbs-up" aria-hidden="true"></i>
+                    <span id="count-likes-{{post.id}}" class="count-likes">{{post.likes_count}}</span>
+                  </button>
+                  {% else %}
+                  <button onclick="like({% url 'share'  %},{{post.id}})" id='like{{post.id}}' value="True">
+                    <i id="icon-like-{{post.id}}" class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                    <span id="count-likes-{{post.id}}" class="count-likes">{{post.likes_count}}</span>
+                  </button>
+                  {% endif %}
+
+                  
+
+                  <!-- <button onclick="comment({% url 'share'  %})"><i class="fa fa-comment-o" aria-hidden="true"></i> <span class="count-comments">1223
+                    3
+                  </span>
+                  </button> -->
+
+                  <button onclick="all_comments({% url 'comments'  %},{{post.id}})">
+                    <i class="fa fa-comment-o" aria-hidden="true"></i> <span
+                      class="count-comments">{{post.comments_count }}
+                    </span>
+                  </button>
+
+                  <button onclick="share({% url 'share' %},{{post.id}})"><i class="fa fa-share-alt" aria-hidden="true"></i></button>
+
+                {% if post.author == request.user %}
+                  <button onclick="del({% url 'delete'  %})" class="fa fa-trash-ico"><i class="fa fa-trash-o"
+                  aria-hidden="true"></i></button>
+                {% endif %}
+
+
+                </p>
+              </div>
+            </div>
+          </center>
+        </div>
+
+      </div>
+
+
+
+
+    </div>
+  </div>
+
+
+  {% endif %}
+  <br />
+
+
+  {% endfor %}
+
+
+
+  <div class="modal fade" id="foo_modal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">References</div>
+        <div class="modal-body"></div>
+        <div class="modal-footer"></div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+</div>
+
+</div>
+
+<div class="modal fade" id="CommentModalCenter" tabindex="-1" role="dialog" aria-labelledby="CommentModalCenterTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div id="comment-body" class="modal-body">
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button> -->
+        {% include 'trading/comments.html' %}
+      </div>
+    </div>
+    <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> -->
+  </div>
+</div>
+</div>
+
+<div class="modal fade share-modal" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content col-12">
+      <div class="modal-header">
+        <h5 class="modal-title">Share</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span> </button>
+      </div>
+      {% comment %} <div class="modal-body">
+        <div class="icon-container1 d-flex">
+          <div class="smd"> <i class=" img-thumbnail fa fa-twitter fa-2x"
+              style="color:#4c6ef5;background-color: aliceblue"></i>
+            <a href="www.twitter.com" id="share-twitter-url">
+              <p>Twitter</p>
+            </a>
+          </div>
+          <div class="smd"> <i class="img-thumbnail fa fa-facebook fa-2x"
+              style="color: #3b5998;background-color: #eceff5;"></i>
+            <a href="www.facebook.com">
+              <p>Facebook</p>
+            </a>
+
+          </div>
+
+        </div>
+
+      </div> {% endcomment %}
+      <div class="modal-footer"> <label style="font-weight: 600">Page Link <span class="message"></span></label><br />
+        <div class="row"> <input class="col-10 ur" type="url" placeholder="#" id="myInput"
+            aria-describedby="inputGroup-sizing-default" style="height: 40px;"> <button class="cpy"
+            onclick="myFunction()"><i class="fa fa-clone"></i></button> </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="{% static 'extra.js' %}"></script>
+
+<!-- closing parallax here -->
+<script>
+
+  $(document).on('submit', '#post-form', function (e) {
+    e.preventDefault()
+    post_id = $(this).attr("data_id"),
+
+
+
+
+      $.ajax({
+        type: 'GET',
+        url: "/reference/" + post_id,
+        success: function (data, textStatus, jqXHR) {
+          $('#foo_modal').find('.modal-body').html(data);
+          $('#foo_modal').modal('show');
+
+        },
+      });
+
+  })
+</script>
+
+
+
+{% endblock main %}
+{% block footer %}
+{% endblock %}

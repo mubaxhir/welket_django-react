@@ -1,0 +1,107 @@
+{% extends "trading/base.html" %}
+{% load static %}
+
+{% block navbar %}
+
+{% endblock navbar %}
+<!-- Start Main -->
+{% block main %}
+<!-- Start Signup Form -->
+
+<div id="otpmodal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="otpmodalTitle">Email verification</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex justify-content-center align-items-center">
+          <div class="card py-2 px-3">
+            <h5 class="m-0">Email verification</h5><span class="mobile-text">Enter the code we just send on your email
+               <b class="text-danger">{{user.email}}</b></span>
+              <input type="hidden"  id="useremail" value="{{user.email}}"/>
+            <form method="post" action="{% url 'verifyotp' %}" class="digit-group" data-group-name="digits"
+              data-autosubmit="false" autocomplete="off">
+              {% csrf_token %}
+              <div class="wrap-input-fields">
+
+                <input type="number" id="digit-1" name="digit1" data-next="digit-2" />
+                <input type="number" id="digit-2" name="digit2" data-next="digit-3" data-previous="digit-1" />
+                <input type="number" id="digit-3" name="digit3" data-next="digit-4" data-previous="digit-2" />
+                <input type="number" id="digit-4" name="digit4" data-next="digit-5" data-previous="digit-3" />
+
+              </div>
+              <div class="col-sm-12">
+                  {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{message.tags}} alert-dismissible">
+                      <button class="close" type="button" data-dismiss="alert">×</button>
+                      <i class="fa fa-warning"></i> &nbsp;&nbsp;&nbsp;{{message}}
+                    </div>
+                    {% endfor %}
+                  {% endif %}
+              </div>
+              <div class="text-center mt-5"><button class="font-weight-bold text-danger cursor" type="submit">Verify
+                  Code</button></div>
+              <div class="text-center mt-5"><span class="d-block mobile-text">Don't receive the code?</span><a href="#" onclick="resend({% url 'forgot_password' %})"
+                  class="font-weight-bold text-danger cursor">Resend</a></div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+  function resend(url) {
+    email = document.getElementById('useremail').value;
+    console.log(email);
+    $.ajax({
+      type: 'POST',
+      url: url,
+      headers: {
+        "X-CSRFToken": $('[name="csrfmiddlewaretoken"]').val()
+      },
+      data: {'email':email},
+      success: function(status) {
+      }
+    });
+}
+
+$('.digit-group').find('input').each(function () {
+  $(this).attr('maxlength', 1);
+  $(this).on('keyup', function (e) {
+    var parent = $($(this).parent());
+
+    if (e.keyCode === 8 || e.keyCode === 37) {
+      var prev = parent.find('input#' + $(this).data('previous'));
+
+      if (prev.length) {
+        $(prev).select();
+      }
+    } else if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105) || e.keyCode === 39) {
+      var next = parent.find('input#' + $(this).data('next'));
+
+      if (next.length) {
+        $(next).select();
+      } else {
+        if (parent.data('autosubmit')) {
+          parent.submit();
+        }
+      }
+    }
+  });
+});
+</script>
+
+
+<!-- End Signup Form -->
+{% endblock main %}
+<!-- End Main -->
+
+{% block footer %}
+{% endblock %}

@@ -1,0 +1,143 @@
+Watching for file changes with StatReloader
+HTTP GET /Userprofile/42/ 200 [0.07, 157.36.221.235:42068]
+HTTP GET /static/js/extra.js 304 [0.00, 157.36.221.235:42068]
+HTTP GET /media/post_videos/ye-tou-hoga.mp4 200 [0.01, 157.36.221.235:42560]
+WebSocket HANDSHAKING /ws [157.36.221.235:41035]
+WebSocket CONNECT /ws [157.36.221.235:41035]
+HTTP POST /share/ 200 [0.01, 157.36.221.235:42068]
+/root/buntoo.com/users/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 03, 2021 - 07:11:04
+Django version 3.0.7, using settings 'bfinder.settings'
+Starting ASGI/Channels version 2.4.0 development server at http://0.0.0.0:9000/
+Quit the server with CONTROL-C.
+None
+Watching for file changes with StatReloader
+HTTP GET /Userprofile/42/ 200 [0.11, 157.36.221.235:43539]
+HTTP GET /media/post_videos/ye-tou-hoga.mp4 200 [0.02, 157.36.221.235:43539]
+HTTP GET /static/js/extra.js 200 [0.01, 157.36.221.235:48906]
+WebSocket HANDSHAKING /ws [157.36.221.235:34641]
+WebSocket CONNECT /ws [157.36.221.235:34641]
+Internal Server Error: /share/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/dist-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.6/dist-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/usr/local/lib/python3.6/dist-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/buntoo.com/users/views.py", line 257, in share
+    existed,created = Share.objects.get_or_create(post=post,user=request.user,likes=like)
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/manager.py", line 82, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/query.py", line 559, in get_or_create
+    return self.get(**kwargs), False
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/query.py", line 404, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/query.py", line 904, in filter
+    return self._filter_or_exclude(False, *args, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/query.py", line 923, in _filter_or_exclude
+    clone.query.add_q(Q(*args, **kwargs))
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/sql/query.py", line 1351, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/sql/query.py", line 1382, in _add_q
+    check_filterable=check_filterable,
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/sql/query.py", line 1312, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/sql/query.py", line 1166, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/lookups.py", line 22, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/lookups.py", line 72, in get_prep_lookup
+    return self.lhs.output_field.get_prep_value(self.rhs)
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/fields/__init__.py", line 965, in get_prep_value
+    return self.to_python(value)
+  File "/usr/local/lib/python3.6/dist-packages/django/db/models/fields/__init__.py", line 958, in to_python
+    params={'value': value},
+django.core.exceptions.ValidationError: ['“true” value must be either True, False, or None.']
+HTTP POST /share/ 500 [0.05, 157.36.221.235:48906]
+Watching for file changes with StatReloader
+HTTP GET / 200 [0.06, 172.104.84.223:50130]
+/root/buntoo.com/bfinder/settings.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 05, 2021 - 18:31:15
+Django version 3.0.7, using settings 'bfinder.settings'
+Starting ASGI/Channels version 2.4.0 development server at http://0.0.0.0:9000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+/root/buntoo.com/trading/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 06, 2021 - 02:11:14
+Django version 3.0.7, using settings 'bfinder.settings'
+Starting ASGI/Channels version 2.4.0 development server at http://0.0.0.0:9000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+/root/buntoo.com/bfinder/settings.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 06, 2021 - 02:18:55
+Django version 3.0.7, using settings 'bfinder.settings'
+Starting ASGI/Channels version 2.4.0 development server at http://0.0.0.0:9000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+/root/buntoo.com/trading/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 06, 2021 - 02:23:25
+Django version 3.0.7, using settings 'bfinder.settings'
+Starting ASGI/Channels version 2.4.0 development server at http://0.0.0.0:9000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+/root/buntoo.com/bfinder/urls.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 06, 2021 - 02:23:58
+Django version 3.0.7, using settings 'bfinder.settings'
+Starting ASGI/Channels version 2.4.0 development server at http://0.0.0.0:9000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+/root/buntoo.com/trading/urls.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 06, 2021 - 02:26:38
+Django version 3.0.7, using settings 'bfinder.settings'
+Starting ASGI/Channels version 2.4.0 development server at http://0.0.0.0:9000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+/root/buntoo.com/bfinder/urls.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 06, 2021 - 02:31:04
+Django version 3.0.7, using settings 'bfinder.settings'
+Starting ASGI/Channels version 2.4.0 development server at http://0.0.0.0:9000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+/root/buntoo.com/trading/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 06, 2021 - 02:31:14
+Django version 3.0.7, using settings 'bfinder.settings'
+Starting ASGI/Channels version 2.4.0 development server at http://0.0.0.0:9000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+/root/buntoo.com/trading/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 06, 2021 - 02:32:54
+Django version 3.0.7, using settings 'bfinder.settings'
+Starting ASGI/Channels version 2.4.0 development server at http://0.0.0.0:9000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader

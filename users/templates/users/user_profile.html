@@ -1,0 +1,1614 @@
+<!-- inherits repeated elements from base.html -->
+{% extends 'trading/base.html' %}
+<!-- Load Static Files -->
+{% load static %}
+{% load break %}
+<!-- Load crispy forms -->
+{% load crispy_forms_tags %} {% block main %}
+
+<style>
+  input {
+    width: 60% !important
+  }
+
+  @media screen and (min-width: 200px) and (max-width: 576px) {
+    input {
+      width: 100% !important
+    }
+  }
+
+  #id_image {
+    color: black;
+  }
+</style>
+
+
+<!-- Access username variable, doesn't need added to view because User is built-in to Django -->
+<div class="container max-container">
+  <div class="row glass-effect" style="padding: 20px;">
+    <div class="col-lg-5 profile-img-block">
+
+      <div class="dropdown account-setting-dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          Account Settings
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="{% url 'ad_form' %}">Create Ad</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <img id="previewImage" src="{{ user.profile.image.url }}" alt="Card image cap">
+        <div class="user-small-info username-info">
+          <p class="card-text">{{user.first_name}} {{user.last_name}}</p>
+          <p class="card-text">@{{user.username}}</p>
+          {% if user_follow %}
+          <!-- <button type="button" class="follower-btn btn btn-primary" data-toggle="modal" data-target="#followermodal">
+            {{user_follow.count}} followers
+          </button> -->
+
+          <button class="follower-btn btn btn-primary" type="button" data-toggle="collapse"
+            data-target="#followercountcollapse" aria-expanded="false" aria-controls="followercountcollapse">
+            {{user_follow.count}} followers
+          </button>
+
+          <div class="collapse wrap-followers-cell-drop" id="followercountcollapse">
+            <div class="card card-body">
+
+              <div class="wrap-followers-block">
+                {% for i in user_follow %}
+                <div class="wrap-followers-cell">
+                  <div class="wrap-followers-inside">
+                    <input type="hidden" name="username" value="{{i.user_id.id}}">
+                    <a href="{% url 'Userprofile' i.user_id.id   %}"> <img src="{{ i.user_id.profile.image.url }}"
+                        alt="" class="user-profile-ico"> {{i.user_id.username}}</a>
+                  </div>
+                  <div class="btn-follow-block wrap-follow-alert">
+                    <input type="hidden" value="{{i.id}}" id="follow" />
+                    {% if i in user_follow_post %}
+                    <button onclick="AddToFollow({% url 'add_to_follow'  %})" class="btn btn-primary action-btn"
+                      id="status" value="{{i.id}}">Following</button>
+                    {% else %}
+                    <button onclick="AddToFollow({% url 'add_to_follow'  %})" class="btn btn-primary action-btn"
+                      id="status" value="{{i.id}}">Follow</button>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              <!-- <a class="dropdown-item" href="#">Action</a>
+                  <a class="dropdown-item" href="#">Another action</a>
+                  <a class="dropdown-item" href="#">Something else here</a> -->
+
+            </div>
+          </div>
+
+          {% else %}
+          <!-- <button type="button" class="follower-btn btn btn-primary" data-toggle="modal" data-target="#followermodal">
+            Yoou have no followers yet.
+          </button> -->
+
+          <p>0 followers</p>
+
+          <div class="collapse wrap-followers-cell-drop" id="nofollowercollapse">
+            <div class="card card-body">
+
+              <div class="wrap-followers-block">
+                {% for i in user_follow %}
+                <div class="wrap-followers-cell">
+                  <div class="wrap-followers-inside">
+                    <input type="hidden" name="username" value="{{i.user_id.id}}">
+                    <a href="{% url 'Userprofile' i.user_id.id   %}"> <img src="{{ i.user_id.profile.image.url }}"
+                        alt="" class="user-profile-ico"> {{i.user_id.username}}</a>
+                  </div>
+                  <button onclick="showChatBox('{{ request.user.id }}','{{ i.id }}',true)" type="submit" value=""
+                    class="btn btn-link btn-sm pull-right send-message-btn">
+                    Send Message</button>
+                </div>
+                {% endfor %}
+              </div>
+              <!-- <a class="dropdown-item" href="#">Action</a>
+                  <a class="dropdown-item" href="#">Another action</a>
+                  <a class="dropdown-item" href="#">Something else here</a> -->
+
+            </div>
+          </div>
+          {% endif %}
+          <div class="follower-dropdown">
+            <!-- <button class="follower-btn btn btn-primary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              You have {{friend_List|length}} contacts
+            </button> -->
+            {% if friend_List%}
+            <button class="follower-btn btn btn-primary" type="button" data-toggle="collapse"
+              data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+              {{friend_List|length}} contacts
+            </button>
+            {% else %}
+            <p>0 contacts </p>
+            {% endif %}
+
+            <div class="collapse wrap-followers-cell-drop" id="collapseExample">
+              <div class="card card-body">
+
+                <div class="wrap-followers-block">
+                  {% for i in friend_List %}
+                  <div class="wrap-followers-cell">
+                    <div class="wrap-followers-inside">
+                      <input type="hidden" name="username" value="{{i}}">
+                      <a href="{% url 'Userprofile' i.id   %}"> <img src="{{ i.profile.image.url }}" alt=""
+                          class="user-profile-ico"> {{i}}</a>
+                    </div>
+                    <button onclick="showChatBox('{{ request.user.id }}','{{ i.id }}',true)" type="submit" value=""
+                      class="btn btn-link btn-sm pull-right send-message-btn">
+                      Send Message</button>
+                  </div>
+                  {% endfor %}
+                </div>
+                <!-- <a class="dropdown-item" href="#">Action</a>
+                      <a class="dropdown-item" href="#">Another action</a>
+                      <a class="dropdown-item" href="#">Something else here</a> -->
+
+              </div>
+            </div>
+
+
+          </div>
+
+
+        </div>
+      </div>
+
+
+
+      <!-- <div>
+        {% if not friend_List %}
+        <div class="overflow-auto">
+          <p class="center text-center" style="margin-top: 8px;">No friend list to show</p>
+        </div>
+        {% endif %}
+        {% for i in friend_List %}
+
+        <div class="overflow-auto user-chat-notif">
+          <input type="hidden" name="username" value="{{i}}">
+          <a href="{% url 'Userprofile' i.id   %}"> <img src="http://64.227.7.208/media/default.png" alt="" class="user-profile-ico"> {{i}}</a>
+          <button onclick="showChatBox('{{ request.user.id }}','{{ i.id }}',true)" type="submit" value=""
+            class="btn btn-link btn-sm pull-right send-message-btn">
+            Send Message To {{i}}</button>
+        </div>
+
+        {% endfor %}
+      </div> -->
+    </div>
+
+    <div class="col-lg-7 profile-right-info">
+      <legend class="border-bottom mb-4">Profile Info</legend>
+
+      <button type="button" class="btn btn-primary edit-profile-btn" data-toggle="modal"
+        data-target="#editprofileModal">
+        Edit Profile
+      </button>
+
+      <!-- 
+      <button type="button" class="follower-btn btn btn-primary" data-toggle="modal" data-target="#UserContactsmodal">
+        You have {{friend_List|length}} contacts
+      </button> -->
+
+      <!-- <div id="dropdownFriends" class="dropdownfriendswrap">
+        <div class="dropdown account-setting-dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownfriendsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            You have {{friend_List|length}} contacts 
+          </button>
+          <div class="dropdown-menu-one" aria-labelledby="dropdownfriendsButton">
+            {% for i in friend_List %}
+
+            <div class="overflow-auto user-chat-notif">
+              <input type="hidden" name="username" value="{{i}}">
+              <a href="{% url 'Userprofile' i.id   %}"> <img src="http://64.227.7.208/media/default.png" alt="" class="user-profile-ico"> {{i}}</a>
+              <button onclick="showChatBox('{{ request.user.id }}','{{ i.id }}',true)" type="submit" value=""
+                class="btn btn-link btn-sm pull-right send-message-btn">
+                Send Message</button>
+            </div>
+
+            {% endfor %}
+          </div>
+        </div>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+
+<div class="container user-profile-message">
+  <div class="row glass-effect">
+
+    <div class="col-md-12">
+
+      <div class="text-white message-block" style="padding: 30px;">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{message.tags}} alert-dismissible">
+          <button class="close" type="button" data-dismiss="alert">×</button>
+          <i class="fa fa-warning"></i> &nbsp;&nbsp;&nbsp;{{message}}
+        </div>
+        {% endfor %}
+        {% endif %}
+        <h5 style="text-align: center; color: #000;">Create whats on your mind</h5>
+        <hr />
+        <form method="POST" action="{% url 'user_profile' %}" class="form-group" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="form-group">
+            <label>What's on your mind?<span style="color: red;">*</span> </label>
+            <textarea name="content" class="form-control"></textarea>
+          </div>
+          <input type="hidden" hidden="" name="form_name" value="post_form">
+          <center>
+            <div class="form-group">
+              <label class="btn btn-outline-info fa fa-image">&nbsp;&nbsp;Add Image
+                <input hidden type="file" accept="image/*" name="img" placeholder="Share Image">
+              </label>
+
+              <label class="btn btn-outline-info fa fa-file-video-o">&nbsp;&nbsp;Add Video&nbsp;
+                <input hidden type="file" accept="video/*" name="video" placeholder="Share  Video">
+              </label>
+            </div>
+          </center>
+
+          <center>
+            <input type="submit" class="btn btn-large btn-primary"
+              style="padding-left: 60px; padding-right: 60px; margin-top: 15px;">
+          </center>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- Advertisement Information Here -->
+
+
+{% if ads %}
+<h5 style="text-align: center; color: #000;">Your advertisements</h5><br>
+{% for i in ads %}
+<div class="container" style="height: 100px;">
+  <div class="row justify-content-between">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-10">
+                <p>
+                  <strong>
+                    {{i.content}}
+                  </strong>
+                </p>
+              </div>
+              <div class="col-md-2">
+                <p>
+                  Clicks : {{i.clicks}}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><br>
+{% endfor %}
+
+{% else %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <h3 style="color: #000;">
+        You haven't posted any Advertisement Yet.
+      </h3>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
+</div>
+
+
+
+{% endif %}
+{% for post in posts %}
+{% if user|shared_post:post.id %}
+
+<div class="container section-one glass-effect" style="padding: 20px;">
+  <div class="row">
+
+    <div class="col-md-12 position-relative">
+      <button class="trash-ico trash-updated-ico"><img class="fa fa-trash-o"
+          src="/static/trading/images/CONXR_POST_LOGO.PNG"></img></button>
+      <!-- <form data_id="{{post.id}}" id="post-form">
+          <input type="submit" value="Reference Check" id="edit_foo" class="btn btn-success">
+        </form> -->
+      {% for shared in user|shared_post:post.id %}
+      <div class="info-box">
+        <a href="#" class="info-left-block">
+          <img class="rounded-circle pull-left profile-img" src="{{ shared.user.profile.image.url }}"
+            alt="Card image cap">
+        </a>
+        <center class="activity-block">
+
+          <div class="col-md-12">
+            <div class="wrap-date-username">
+              <p class="center align-content-center">
+                <a href="{% url 'Userprofile' shared.user.id   %}">
+                  {{shared.user.first_name}}{{shared.user.last_name}} @{{shared.user.username}}
+                </a>
+              </p>
+              <p class="center">{{shared.post.time_since_posted}}</p>
+            </div>
+            <div class="wrap-home-comment">
+              <!-- start child post info -->
+
+
+              <div class="info-box inherit-post">
+
+                <center class="activity-block">
+
+                  <div class="col-md-12  inherit-post-activity">
+                    <a href="#" class="info-left-block">
+                      <img class="rounded-circle pull-left profile-img" src="{{shared.post.author.profile.image.url}}"
+                        alt="Card image cap">
+                    </a>
+
+                    <div class="wrap-inherit">
+                      <div class="wrap-date-username">
+                        <p class="center align-content-center">
+                          <a href="/Userprofile/74/">
+                            {{shared.post.author.first_name}}{{shared.post.author.last_name}}
+                            @{{shared.post.author.username}}
+                          </a>
+                        </p>
+                        <p class="center">{{shared.create_dated}}</p>
+                      </div>
+                      <div class="wrap-home-comment">
+                        <p></p>
+
+                        <p>{{shared.post.content}}</p>
+
+
+                        {% if shared.post.img %}
+                        <div class="col-md-12 p-0 rounded">
+
+                          <img src="{{shared.post.img.url}}" style="width: 100%;">
+                          <a href={{shared.post.linked}}>{{shared.post.linked}}</a>
+
+                        </div>
+                        {% endif %}
+                        {% if shared.post.video %}
+                        <div class="col-md-12 p-0">
+                          <video width="auto" height="180px" loop autoplay muted>
+                            <source src="{{shared.post.video.url}}">
+                          </video>
+                          <a href={{shared.post.linked}}></a>
+                        </div>
+                        {% endif %}
+
+
+                        <p class="share-comment-wrap pl-4">
+                          <input type="hidden" value={{post.id}} id='post' />
+                          {% if user|custom_filter:post.id %}
+                          <button onclick="like({% url 'share'  %},{{post.id}})" id='like-{{post.id}}' value="False">
+                            <i id="icon-like-{{post.id}}" class="fa fa-thumbs-up" aria-hidden="true"></i>
+                            <span id="count-likes-{{post.id}}" class="count-likes">{{post.likes_count}}</span>
+                          </button>
+                          {% else %}
+                          <button onclick="like({% url 'share'  %},{{post.id}})" id='like{{post.id}}' value="True">
+                            <i id="icon-like-{{post.id}}" class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                            <span id="count-likes-{{post.id}}" class="count-likes">{{post.likes_count}}</span>
+                          </button>
+                          {% endif %}
+
+                          <button onclick="all_comments({% url 'comments'  %},{{post.id}})">
+                            <i class="fa fa-comment-o" aria-hidden="true"></i> <span
+                              class="count-comments">{{post.comments_count }}
+                            </span>
+                          </button>
+
+                          <button onclick="share({% url 'share' %},{{post.id}})"><i class="fa fa-share-alt"
+                              aria-hidden="true"></i></button>
+
+                          {% if post.author == request.user %}
+                          <button onclick="del({% url 'delete'  %})" class="fa fa-trash-ico"><i class="fa fa-trash-o"
+                              aria-hidden="true"></i></button>
+                          {% endif %}
+                      </div>
+                    </div>
+                  </div>
+
+                </center>
+              </div>
+              <!-- end child post info -->
+
+
+              {% comment %} <p>{{ post.title }}</p>
+              {% if post.content%}
+              <p>{{ post.content }}</p>
+
+
+              <p id="data"></p>
+              {% endif%}
+              {% if post.img %}
+              <div class="col-md-12 p-0 mt-3">
+                <img src="{{post.img.url}}" class="wrap-img">
+              </div>
+              {% endif %}
+              {% if post.video %}
+              <div class="col-md-12 p-0 mt-3">
+                <video width="auto" class="wrap-img" controls>
+                  <source src="{{post.video.url}}">
+                </video>
+              </div>
+              {% endif %}
+              <p class="share-comment-wrap pl-4">
+                <input type="hidden" value={{post.id}} id='post' />
+                {% if user|custom_filter:post.id %}
+                <button onclick="like({% url 'share'  %},{{post.id}})" id='like-{{post.id}}' value="False">
+                  <i id="icon-like-{{post.id}}" class="fa fa-thumbs-up" aria-hidden="true"></i>
+                  <span id="count-likes-{{post.id}}" class="count-likes">{{post.likes_count}}</span>
+                </button>
+                {% else %}
+                <button onclick="like({% url 'share'  %},{{post.id}})" id='like{{post.id}}' value="True">
+                  <i id="icon-like-{{post.id}}" class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                  <span id="count-likes-{{post.id}}" class="count-likes">{{post.likes_count}}</span>
+                </button>
+                {% endif %}
+
+                {% endcomment %}
+
+                <!-- <button onclick="comment({% url 'share'  %})"><i class="fa fa-comment-o" aria-hidden="true"></i> <span class="count-comments">1223
+                    3
+                  </span>
+                  </button> -->
+
+                {% comment %} <button onclick="all_comments({% url 'comments'  %},{{post.id}})">
+                  <i class="fa fa-comment-o" aria-hidden="true"></i> <span class="count-comments">{{post.comments_count
+                    }}
+                  </span>
+                </button>
+
+                <button onclick="share({% url 'share' %},{{post.id}})"><i class="fa fa-share-alt"
+                    aria-hidden="true"></i></button>
+
+                {% if post.author == request.user %}
+                <button onclick="del({% url 'delete'  %})" class="fa fa-trash-ico"><i class="fa fa-trash-o"
+                    aria-hidden="true"></i></button>
+                {% endif %} {% endcomment %}
+
+
+              </p>
+            </div>
+            {% endfor %}
+          </div>
+        </center>
+      </div>
+
+    </div>
+
+
+
+
+  </div>
+</div>
+<br />
+{% else %}
+<div class="container glass-effect"
+  style="background-color: rgba(38,50,56, 0.5); padding: 20px; border: 1px solid gray; color: #000;">
+  <div class="row">
+
+    <div class="col-md-12 position-relative">
+      {% comment %} {% if post.author == request.user %}
+      <button onclick="del({% url 'delete'  %})" class="trash-ico"><i class="fa fa-trash-o"
+          aria-hidden="true"></i></button>
+      {% endif %} {% endcomment %}
+      <div class="info-box">
+        <a href="{% url 'Userprofile' post.author.id   %}">
+          <img class="rounded-circle pull-left profile-img" src="{{ post.author.profile.image.url }}"
+            alt="Card image cap">
+        </a>
+        <center class="activity-block">
+
+          <div class="col-md-12">
+            <div class="wrap-date-username">
+              <p class="center align-content-center">
+                <a href="{% url 'Userprofile' post.author.id   %}">
+                  {{post.author.first_name}}{{post.author.last_name}} @{{post.author}}
+                </a>
+              </p>
+              <p class="center">{{post.time_since_posted}}</p>
+            </div>
+
+            <p>{{ post.title }}</p>
+            {% if post.content%}
+            <p>{{ post.content }}</p>
+
+            {% endif%}
+            {% if post.img %}
+
+            <img src="{{post.img.url}}" class="img-user-block">
+
+            {% endif %}
+            {% if post.video %}
+
+            <video width="100%" class="img-user-block" controls>
+              <source src="{{post.video.url}}">
+            </video>
+
+            {% endif %}
+
+            <div>
+              <p class="share-comment-wrap pl-4">
+                <input type="hidden" value={{post.id}} id='post' />
+                {% if user|custom_filter:post.id %}
+                <button onclick="like({% url 'share'  %},{{post.id}})" id='like{{post.id}}' value="False">
+                  <i id="icon-like-{{post.id}}" class="fa fa-thumbs-up" aria-hidden="true"></i>
+                  <span id="count-likes-{{post.id}}" class="count-likes">{{post.likes_count}}</span>
+                </button>
+                {% else %}
+                <button onclick="like({% url 'share'  %},{{post.id}})" id='like{{post.id}}' value="True">
+                  <i id="icon-like-{{post.id}}" class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                  <span id="count-likes-{{post.id}}" class="count-likes">{{post.likes_count}}</span>
+                </button>
+                {% endif %}
+                <!-- <button onclick="comment({% url 'share'  %})"><i class="fa fa-comment-o" aria-hidden="true"></i> <span class="count-comments">1223
+                  3
+                </span>
+                </button> -->
+
+                <button onclick="all_comments({% url 'comments'  %},{{post.id}})">
+                  <i class="fa fa-comment-o" aria-hidden="true"></i> <span class="count-comments">{{post.comments_count}}
+                  </span>
+                </button>
+
+                <button onclick="share({% url 'share' %},{{post.id}})"><i class="fa fa-share-alt"
+                    aria-hidden="true"></i></button>
+
+                {% if post.author == request.user %}
+                <button onclick="del({% url 'delete'  %})" class="fa fa-trash-ico"><i class="fa fa-trash-o"
+                    aria-hidden="true"></i></button>
+                {% endif %}
+
+              </p>
+            </div>
+          </div>
+
+        </center>
+      </div>
+
+    </div>
+
+
+  </div>
+</div>
+<br />
+{% endif %}
+{% endfor %}
+
+
+
+
+
+<div class="modal fade share-modal" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content col-12">
+      <div class="modal-header">
+        <h5 class="modal-title">Share</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span> </button>
+      </div>
+      {% comment %} <div class="modal-body">
+        <div class="icon-container1 d-flex">
+          <div class="smd"> <i class=" img-thumbnail fa fa-twitter fa-2x"
+              style="color:#4c6ef5;background-color: aliceblue"></i>
+            <a href="www.twitter.com" id="share-twitter-url">
+              <p>Twitter</p>
+            </a>
+          </div>
+          <div class="smd"> <i class="img-thumbnail fa fa-facebook fa-2x"
+              style="color: #3b5998;background-color: #eceff5;"></i>
+            <a href="www.facebook.com">
+              <p>Facebook</p>
+            </a>
+
+          </div>
+
+        </div>
+
+      </div> {% endcomment %}
+      <div class="modal-footer"> <label style="font-weight: 600">Page Link <span class="message"></span></label><br />
+        <div class="row"> <input class="col-10 ur" type="url" placeholder="#" id="myInput"
+            aria-describedby="inputGroup-sizing-default" style="height: 40px;"> <button class="cpy"
+            onclick="myFunction()"><i class="fa fa-clone"></i></button> </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="followermodal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+  aria-labelledby="followermodalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <div class="wrap-followers-block">
+          {% for i in user_follow %}
+          <div class="wrap-followers-cell">
+            <div class="wrap-followers-inside">
+              <input type="hidden" name="username" value="{{i.user_id.id}}" id="follow">
+              <a href="{% url 'Userprofile' i.user_id.id   %}"> <img src="{{ i.user_id.profile.image.url }}" alt=""
+                  class="user-profile-ico"> {{i.user_id.username}}</a>
+            </div>
+            <button onclick="AddToFollow({% url 'add_to_follow'  %})" type="submit" value=""
+              class="btn btn-link btn-sm pull-right send-message-btn">
+              Follow</button>
+          </div>
+          {% endfor %}
+
+        </div>
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Understood</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="UserContactsmodal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+  aria-labelledby="UserContactsmodalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <div class="wrap-followers-block">
+          {% for i in friend_List %}
+          <div class="wrap-followers-cell">
+            <div class="wrap-followers-inside">
+              <input type="hidden" name="username" value="{{i}}">
+              <a href="{% url 'Userprofile' i.id   %}"> <img src="{{ i.profile.image.url }}" alt=""
+                  class="user-profile-ico"> {{i}}</a>
+            </div>
+            <button onclick="showChatBox('{{ request.user.id }}','{{ i.id }}',true)" type="submit" value=""
+              class="btn btn-link btn-sm pull-right send-message-btn">
+              Send Message</button>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Understood</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editprofileModal" tabindex="-1" role="dialog" aria-labelledby="editprofileModalTitle"
+  aria-hidden="true">
+  <div class=" modal-dialog modal-dialog-scrollable modal-dialog-centered
+  " role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-header-wrap">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h5 class="modal-title" id="editprofileModalTitle">Edit Profile</h5>
+        </div>
+      </div>
+      <div class="modal-body">
+        <form method="POST" name="user_info" id="user-form" enctype="multipart/form-data">
+          <!-- form will not work without this-->
+          {% csrf_token %}
+          <!-- form will not work without this-->
+
+          <div class="form-group">
+            <p>First name</p>
+            <input type="text" class="form-control custom-fields" id="Firstname" name="first_name"
+              value="{{user.first_name}}" placeholder="{{user.first_name}}">
+          </div>
+
+          <div class="form-group">
+            <p>Last name</p>
+            <input type="text" class="form-control custom-fields" id="Lastname" name="last_name"
+              value="{{user.last_name}}" placeholder="{{user.last_name}}">
+          </div>
+
+          <div class="form-group">
+            <p>Username*</p>
+            <input type="text" class="form-control custom-fields" id="Lastname" placeholder="{{user.username}}"
+              readonly>
+          </div>
+
+          <div class="form-group">
+            <p>Email*</p>
+            <input type="text" class="form-control custom-fields" id="Lastname" name="email" value={{user.email}}
+              placeholder="{{user.email}}">
+          </div>
+
+          {% comment %} <fieldset class="form-group">
+            <!-- access the form variable | use crispy forms styles -->
+            {{ profile_update_form|crispy }}
+            <input type="hidden" hidden="" name="form_name" value="user_info">
+          </fieldset> {% endcomment %}
+
+
+          <div class="flex wrap-profile-upload">
+
+            <div class="left">
+              <div class="form-group">
+                <p>Upload Image*</p>
+              </div>
+              <div class="profile">
+                <div class="photo">
+                  <div class="form-group">
+                    <input type="file" accept="image/*" id="profile_pic" name="profile_picss"
+                      onChange='getoutput()'><br>
+                    <input id='outputfile' type='hidden' name='outputfile' />
+                  </div>
+                  <div class="photo__helper">
+                    <div class="photo__frame photo__frame--circle">
+                      <canvas class="photo__canvas" id="canvas_id"></canvas>
+                      <div class="message is-empty">
+                        <p class="message--desktop">Drop your photo here or browse your computer.</p>
+                        <p class="message--mobile">Tap here to select your picture.</p>
+                      </div>
+                      <div class="message is-loading">
+                        <i class="fa fa-2x fa-spin fa-spinner"></i>
+                      </div>
+                      <div class="message is-dragover">
+                        <i class="fa fa-2x fa-cloud-upload"></i>
+                        <p>Drop your photo</p>
+                      </div>
+                      <div class="message is-wrong-file-type">
+                        <p>Only images allowed.</p>
+                        <p class="message--desktop">Drop your photo here or browse your computer.</p>
+                        <p class="message--mobile">Tap here to select your picture.</p>
+                      </div>
+                      <div class="message is-wrong-image-size">
+                        <p>Your photo must be larger than 350px.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="photo__options hide">
+                    <div class="photo__zoom">
+                      <input type="range" class="zoom-handler">
+                    </div><a href="javascript:;" class="remove"><i class="fa fa-trash"></i></a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- <img src="" alt="" class="preview">
+                  <img src="" alt="" class="preview preview--rounded"> -->
+            </div>
+
+          </div>
+          <div class="form-group update-image-upload">
+            <input type="hidden" id="Url" data-url="{% url 'user_profile'  %}" />
+            <button class="btn btn-outline-primary" type="submit" style="padding: 5px 40px;">Update</button>
+            <!-- button type must be submit-->
+          </div>
+
+        </form>
+
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="CommentModalCenter" tabindex="-1" role="dialog" aria-labelledby="CommentModalCenterTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div id="comment-body" class="modal-body">
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button> -->
+        {% include 'trading/comments.html' %}
+      </div>
+    </div>
+    <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> -->
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="{% static 'js/base.js' %}"></script>
+<script src="{% static 'extra.js' %}"></script>
+<script type="text/javascript"></script>
+<script>
+  var fileUploadField = document.getElementById("profile_pic");
+
+  fileUploadField.onchange = function (event) {
+    let _filePath = URL.createObjectURL(event.target.files[0]);
+    document.getElementById("previewImage").setAttribute('src', _filePath);
+  };
+</script>
+
+
+<script>
+  $(document).ready(function () {
+    $("#dropdownfriendsButton").click(function () {
+      $(".dropdown-menu-one").toggle();
+    });
+  });
+</script>
+
+<script>
+  var p;
+  var filename;
+  /**
+ * Profile picture
+ * @author Daniel Salvagni <danielsalvagni@gmail.com>
+ */
+
+
+  /**
+   * Turn the globals into local variables.
+   */
+  ; (function (window, $, undefined) {
+    if (!window.profilePicture) {
+      window.profilePicture = profilePicture;
+    }
+
+    /**
+     * Component
+     */
+    function profilePicture(cssSelector, imageFilePath, options) {
+      var self = this;
+      /**
+       * Map the DOM elements
+       */
+      self.element = $(cssSelector);
+      self.canvas = $(cssSelector + ' .photo__frame .photo__canvas')[0];
+      self.photoImg = $(cssSelector + ' .photo__frame img');
+      self.photoHelper = $(cssSelector + ' .photo__helper');
+      self.photoLoading = $(cssSelector + ' .photo__frame .message.is-loading');
+      self.photoOptions = $(cssSelector + ' .photo__options');
+      self.photoFrame = $(cssSelector + ' .photo__frame');
+      self.photoArea = $(cssSelector + ' .photo');
+      self.zoomControl = $(cssSelector + ' input[type=range]');
+      /**
+       * Image info to post to the API
+       */
+      self.model = {
+        imageSrc: null,
+        width: null,
+        height: null,
+        originalWidth: null,
+        originalHeight: null,
+        y: null,
+        x: null,
+        zoom: 1,
+        cropWidth: null,
+        cropHeight: null,
+        file: null
+      };
+
+
+      /**
+       * Plugin options
+       */
+      self.options = {};
+      /**
+       * Plugins defaults
+       */
+      self.defaults = {};
+      self.defaults.imageHelper = true;
+      self.defaults.imageHelperColor = 'rgba(255,255,255,.90)';
+      /**
+       * Callbacks
+       */
+      self.defaults.onChange = null;
+      self.defaults.onZoomChange = null;
+      self.defaults.onImageSizeChange = null;
+      self.defaults.onPositionChange = null;
+      self.defaults.onLoad = null;
+      self.defaults.onRemove = null;
+      self.defaults.onError = null;
+      /**
+       * Zoom default options
+       */
+      self.defaults.zoom = {
+        initialValue: 1,
+        minValue: 0.1,
+        maxValue: 2,
+        step: 0.01
+      };
+      /**
+       * Image default options
+       */
+      self.defaults.image = {
+        originalWidth: 0,
+        originalHeight: 0,
+        originaly: 0,
+        originalX: 0,
+        minWidth: 350,
+        minHeight: 350,
+        maxWidth: 1000,
+        maxHeight: 1000
+      };
+
+      /**
+       * Zoom controls
+       */
+      self.zoom = $(cssSelector + ' .zoom');
+
+      /**
+       * Call the constructor
+       */
+      init(cssSelector, imageFilePath, options);
+
+      /**
+       * Return public methods
+       */
+      return {
+        getData: getData.bind(this),
+        getAsDataURL: getAsDataURL.bind(this),
+        removeImage: removeImage.bind(this)
+      };
+
+
+
+      /**
+       * Constructor
+       * Register all components and options.
+       * Can load a preset image
+       */
+      function init(cssSelector, imageFilePath, options) {
+        /**
+         * Start canvas
+         */
+        self.canvas.width = self.photoFrame.outerWidth();
+        self.canvas.height = self.photoFrame.outerHeight();
+        self.canvasContext = self.canvas.getContext('2d');
+        /**
+         * Show the right text
+         */
+        if (isMobile()) {
+          self.photoArea.addClass('is-mobile');
+        } else {
+          self.photoArea.addClass('is-desktop');
+        }
+        /**
+         * Merge the defaults with the user options
+         */
+        self.options = $.extend({}, self.defaults, options);
+
+        /**
+         * Enable/disable the image helper
+         */
+        if (self.options.imageHelper) {
+          registerImageHelper();
+        }
+
+        registerDropZoneEvents();
+        registerImageDragEvents();
+        registerZoomEvents();
+
+        /**
+         * Start
+         */
+        if (imageFilePath) {
+          processFile(imageFilePath);
+        } else {
+          self.photoArea.addClass('photo--empty');
+        }
+      }
+
+      /**
+       * Check if the user's device is a smartphone/tablet
+       */
+      function isMobile() {
+        return navigator.userAgent.match(/BlackBerry|Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i);
+      }
+
+      /**
+       * Return the model
+       */
+      function getData() {
+        return this.model;
+      }
+      /**
+       * Set the model
+       */
+      function setModel(model) {
+        self.model = model;
+      }
+      /**
+       * Set the image to a canvas
+       */
+      function processFile(imageUrl) {
+        function isDataURL(s) {
+          s = s.toString();
+          return !!s.match(isDataURL.regex);
+        }
+        isDataURL.regex = /^\s*data:([a-z]+\/[a-z]+(;[a-z\-]+\=[a-z\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i;
+
+        var image = new Image();
+        if (!isDataURL(imageUrl)) {
+          image.crossOrigin = 'anonymous';
+        }
+        self.photoArea.addClass('photo--loading');
+        image.onload = function () {
+          var ratio,
+            newH, newW,
+            w = this.width, h = this.height;
+
+          if (w < self.options.image.minWidth ||
+            h < self.options.image.minHeight) {
+            self.photoArea.addClass('photo--error--image-size photo--empty');
+            setModel({});
+
+            /**
+             * Call the onError callback
+             */
+            if (typeof self.options.onError === 'function') {
+              self.options.onError('image-size');
+            }
+
+            self.photoArea.removeClass('photo--loading');
+            return;
+          } else {
+            self.photoArea.removeClass('photo--error--image-size');
+          }
+
+          self.photoArea.removeClass('photo--empty photo--error--file-type photo--loading');
+
+          var frameRatio = self.options.image.maxHeight / self.options.image.maxWidth;
+          var imageRatio = self.model.height / self.model.width;
+
+          if (frameRatio > imageRatio) {
+            newH = self.options.image.maxHeight;
+            ratio = (newH / h);
+            newW = parseFloat(w) * ratio;
+          } else {
+            newW = self.options.image.maxWidth;
+            ratio = (newW / w);
+            newH = parseFloat(h) * ratio;
+          }
+          h = newH;
+          w = newW;
+
+          self.model.imageSrc = image;
+          self.model.originalHeight = h;
+          self.model.originalWidth = w;
+          self.model.height = h;
+          self.model.width = w;
+          self.model.cropWidth = self.photoFrame.outerWidth();
+          self.model.cropHeight = self.photoFrame.outerHeight();
+          self.model.x = 0;
+          self.model.y = 0;
+          self.photoOptions.removeClass('hide');
+          fitToFrame();
+          render();
+
+          /**
+           * Call the onLoad callback
+           */
+          if (typeof self.options.onLoad === 'function') {
+            self.options.onLoad(self.model);
+          }
+
+        };
+
+        image.src = imageUrl;
+      }
+      /**
+       * Remove the image and reset the component state
+       */
+      function removeImage() {
+        self.canvasContext.clearRect(0, 0, self.model.cropWidth, self.model.cropHeight);
+        self.canvasContext.save();
+        self.photoArea.addClass('photo--empty');
+        self.imageHelperCanvasContext.clearRect(0, 0, self.imageHelperCanvas.width, self.imageHelperCanvas.height);
+        self.imageHelperCanvasContext.save();
+        setModel({});
+
+        /**
+         * Call the onRemove callback
+         */
+        if (typeof self.options.onRemove === 'function') {
+          self.options.onRemove(self.model);
+        }
+      }
+
+      /**
+       * Register the file drop zone events 
+       */
+      function registerDropZoneEvents() {
+        var target = null;
+        /**
+         * Stop event propagation to all dropzone related events.
+         */
+        self.element.on('drag dragstart dragend dragover dragenter dragleave drop', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.originalEvent.dataTransfer.dropEffect = 'copy';
+        });
+
+        /**
+         * Register the events when the file is out or dropped on the dropzone
+         */
+        self.element.on('dragend dragleave drop', function (e) {
+          if (target === e.target) {
+            self.element.removeClass('is-dragover');
+          }
+        });
+        /**
+         * Register the events when the file is over the dropzone
+         */
+        self.element.on('dragover dragenter', function (e) {
+          target = e.target;
+          self.element.addClass('is-dragover');
+        });
+        /**
+         * On a file is selected, calls the readFile method.
+         * It is allowed to select just one file - we're forcing it here.
+         */
+        self.element.on('change', 'input[type=file]', function (e) {
+          filename = this.files[0].name;
+          if (this.files && this.files.length) {
+            readFile(this.files[0]);
+            this.value = '';
+          }
+        });
+        /**
+         * Handle the click to the hidden input file so we can browser files.
+         */
+        self.element.on('click', '.photo--empty .photo__frame', function (e) {
+          $(cssSelector + ' input[type=file]').trigger('click');
+
+        });
+        /**
+         * Register the remove action to the remove button.
+         */
+        self.element.on('click', '.remove', function (e) {
+          removeImage();
+        });
+        /**
+         * Register the drop element to the container component
+         */
+        self.element.on('drop', function (e) {
+          readFile(e.originalEvent.dataTransfer.files[0]);
+        });
+
+
+        /**
+         * Only into the DropZone scope.
+         * Read a file using the FileReader API.
+         * Validates file type.
+         */
+        function readFile(file) {
+          self.photoArea.removeClass('photo--error photo--error--file-type photo--error-image-size');
+          /**
+           * Validate file type
+           */
+          if (!file.type.match('image.*')) {
+            self.photoArea.addClass('photo--error--file-type');
+            /**
+             * Call the onError callback
+             */
+            if (typeof self.options.onError === 'function') {
+              self.options.onError('file-type');
+            }
+            return;
+          }
+
+          var reader;
+          reader = new FileReader();
+          reader.onloadstart = function () {
+            self.photoArea.addClass('photo--loading');
+          }
+          reader.onloadend = function (data) {
+            self.photoImg.css({ left: 0, top: 0 });
+            var base64Image = data.target.result;
+            processFile(base64Image, file.type);
+          }
+          reader.onerror = function () {
+            self.photoArea.addClass('photo--error');
+            /**
+             * Call the onError callback
+             */
+            if (typeof self.options.onError === 'function') {
+              self.options.onError('unknown');
+            }
+          }
+          self.model.file = file;
+          reader.readAsDataURL(file);
+        }
+      }
+      /**
+       * Register the image drag events
+       */
+      function registerImageDragEvents() {
+        var $dragging, x, y, clientX, clientY;
+        if (self.options.imageHelper) {
+          self.photoHelper.on("mousedown touchstart", dragStart)
+            .css('cursor', 'move');
+        } else {
+          self.photoFrame.on("mousedown touchstart", dragStart);
+        }
+
+        /**
+         * Stop dragging
+         */
+        $(window).on("mouseup touchend", function (e) {
+          if ($dragging) {
+            /**
+             * Call the onPositionChange callback
+             */
+            if (typeof self.options.onPositionChange === 'function') {
+              self.options.onPositionChange(self.model);
+            }
+            /**
+             * Call the onChange callback
+             */
+            if (typeof self.options.onChange === 'function') {
+              self.options.onChange(self.model);
+            }
+          }
+          $dragging = null;
+        });
+        /**
+         * Drag the image inside the container
+         */
+        $(window).on("mousemove touchmove", function (e) {
+
+          if ($dragging) {
+            e.preventDefault();
+            var refresh = false;
+            clientX = e.clientX;
+            clientY = e.clientY;
+            if (e.touches) {
+              clientX = e.touches[0].clientX
+              clientY = e.touches[0].clientY
+            }
+
+            var dy = (clientY) - y;
+            var dx = (clientX) - x;
+            dx = Math.min(dx, 0);
+            dy = Math.min(dy, 0);
+            /**
+             * Limit the area to drag horizontally
+             */
+            if (self.model.width + dx >= self.model.cropWidth) {
+              self.model.x = dx;
+              refresh = true;
+            }
+            if (self.model.height + dy >= self.model.cropHeight) {
+              self.model.y = dy;
+              refresh = true;
+            }
+            if (refresh) {
+              render();
+            }
+          };
+        });
+
+        function dragStart(e) {
+          $dragging = true;
+          clientX = e.clientX;
+          clientY = e.clientY;
+          if (e.touches) {
+            clientX = e.touches[0].clientX
+            clientY = e.touches[0].clientY
+          }
+          x = clientX - self.model.x;
+          y = clientY - self.model.y;
+        }
+      }
+      /**
+       * Register the zoom control events
+       */
+      function registerZoomEvents() {
+
+        self.zoomControl
+          .attr('min', self.options.zoom.minValue)
+          .attr('max', self.options.zoom.maxValue)
+          .attr('step', self.options.zoom.step)
+          .val(self.options.zoom.initialValue)
+          .on('input', zoomChange);
+
+        function zoomChange(e) {
+          self.model.zoom = Number(this.value);
+          updateZoomIndicator();
+          scaleImage();
+          /**
+           * Call the onPositionChange callback
+           */
+          if (typeof self.options.onZoomChange === 'function') {
+            self.options.onZoomChange(self.model);
+          }
+        }
+      }
+      /**
+       * Set the image to the center of the frame
+       */
+      function centerImage() {
+        var x = Math.abs(self.model.x - ((self.model.width - self.model.cropWidth) / 2));
+        var y = Math.abs(self.model.y - ((self.model.height - self.model.cropHeight) / 2));
+        x = self.model.x - x;
+        y = self.model.y - y;
+        x = Math.min(x, 0);
+        y = Math.min(y, 0);
+
+        if (self.model.width + (x) < self.model.cropWidth) {
+          /**
+           * Calculates to handle the empty space on the right side
+           */
+          x = Math.abs((self.model.width - self.model.cropWidth)) * -1;
+        }
+        if (self.model.height + (y) < self.model.cropHeight) {
+          /**
+           * Calculates to handle the empty space on bottom
+           */
+          y = Math.abs((self.model.height - self.model.cropHeight)) * -1;
+        }
+        self.model.x = x;
+        self.model.y = y;
+      }
+      /**
+       * Calculates the new image's position based in its new size
+       */
+      function getPosition(newWidth, newHeight) {
+
+        var deltaY = (self.model.y - (self.model.cropHeight / 2)) / self.model.height;
+        var deltaX = (self.model.x - (self.model.cropWidth / 2)) / self.model.width;
+        var y = (deltaY * newHeight + (self.model.cropHeight / 2));
+        var x = (deltaX * newWidth + (self.model.cropWidth / 2));
+
+        x = Math.min(x, 0);
+        y = Math.min(y, 0);
+
+        if (newWidth + (x) < self.model.cropWidth) {
+          /**
+           * Calculates to handle the empty space on the right side
+           */
+          x = Math.abs((newWidth - self.model.cropWidth)) * -1;
+
+        }
+        if (newHeight + (y) < self.model.cropHeight) {
+          /**
+           * Calculates to handle the empty space on bottom
+           */
+          y = Math.abs((newHeight - self.model.cropHeight)) * -1;
+        }
+        return { x: x, y: y };
+      }
+      /**
+       * Resize the image
+       */
+      function scaleImage() {
+        /**
+         * Calculates the image position to keep it centered
+         */
+        var newWidth = self.model.originalWidth * self.model.zoom;
+        var newHeight = self.model.originalHeight * self.model.zoom;
+
+        var position = getPosition(newWidth, newHeight);
+
+        /**
+         * Set the model
+         */
+        self.model.width = newWidth;
+        self.model.height = newHeight;
+        self.model.x = position.x;
+        self.model.y = position.y;
+        updateZoomIndicator();
+        render();
+
+        /**
+         * Call the onImageSizeChange callback
+         */
+        if (typeof self.options.onImageSizeChange === 'function') {
+          self.options.onImageSizeChange(self.model);
+        }
+      }
+
+      /**
+       * Updates the icon state from the slider
+       */
+      function updateZoomIndicator() {
+        /**
+         * Updates the zoom icon state
+         */
+        if (self.model.zoom.toFixed(2) == Number(self.zoomControl.attr('min')).toFixed(2)) {
+          self.zoomControl.addClass('zoom--minValue');
+        } else {
+          self.zoomControl.removeClass('zoom--minValue');
+        }
+        if (self.model.zoom.toFixed(2) == Number(self.zoomControl.attr('max')).toFixed(2)) {
+          self.zoomControl.addClass('zoom--maxValue');
+        } else {
+          self.zoomControl.removeClass('zoom--maxValue');
+        }
+      }
+
+      /**
+       * Resize and position the image to fit into the frame
+       */
+      function fitToFrame() {
+        var newHeight, newWidth, scaleRatio;
+
+        var frameRatio = self.model.cropHeight / self.model.cropWidth;
+        var imageRatio = self.model.height / self.model.width;
+
+        if (frameRatio > imageRatio) {
+          newHeight = self.model.cropHeight;
+          scaleRatio = (newHeight / self.model.height);
+          newWidth = parseFloat(self.model.width) * scaleRatio;
+        } else {
+          newWidth = self.model.cropWidth;
+          scaleRatio = (newWidth / self.model.width);
+          newHeight = parseFloat(self.model.height) * scaleRatio;
+        }
+        self.model.zoom = scaleRatio;
+
+        self.zoomControl
+          .attr('min', scaleRatio)
+          .attr('max', self.options.zoom.maxValue - scaleRatio)
+          .val(scaleRatio);
+
+        self.model.height = newHeight;
+        self.model.width = newWidth;
+        updateZoomIndicator();
+        centerImage();
+      }
+      /**
+       * Update image's position and size
+       */
+      function render() {
+        self.canvasContext.clearRect(0, 0, self.model.cropWidth, self.model.cropHeight);
+        self.canvasContext.save();
+        self.canvasContext.globalCompositeOperation = "destination-over";
+        self.canvasContext.drawImage(self.model.imageSrc, self.model.x, self.model.y, self.model.width, self.model.height);
+        self.canvasContext.restore();
+
+        if (self.options.imageHelper) {
+          updateHelper();
+        }
+        /**
+         * Call the onChange callback
+         */
+        if (typeof self.options.onChange === 'function') {
+          self.options.onChange(self.model);
+        }
+      }
+
+      /**
+       * Updates the image helper attributes
+       */
+      function updateHelper() {
+        var x = self.model.x + self.photoFrame.position().left;
+        var y = self.model.y + self.photoFrame.position().top;
+        /**
+         * Clear
+         */
+        self.imageHelperCanvasContext.clearRect(0, 0, self.imageHelperCanvas.width, self.imageHelperCanvas.height);
+        self.imageHelperCanvasContext.save();
+        self.imageHelperCanvasContext.globalCompositeOperation = "destination-over";
+        /**
+         * Draw the helper
+         */
+        self.imageHelperCanvasContext.beginPath();
+        self.imageHelperCanvasContext.rect(0, 0, self.imageHelperCanvas.width, self.imageHelperCanvas.height);
+        self.imageHelperCanvasContext.fillStyle = self.options.imageHelperColor;
+        self.imageHelperCanvasContext.fill('evenodd');
+        /**
+         * Draw the image
+         */
+        self.imageHelperCanvasContext.drawImage(self.model.imageSrc, x, y, self.model.width, self.model.height);
+        self.imageHelperCanvasContext.restore();
+      }
+      /**
+       * Creates the canvas for the image helper
+       */
+      function registerImageHelper() {
+        var canvas = document.createElement('canvas');
+        canvas.className = "canvas--helper";
+        canvas.width = self.photoHelper.outerWidth();
+        canvas.height = self.photoHelper.outerHeight();
+
+        self.photoHelper.prepend(canvas);
+
+        self.imageHelperCanvas = canvas;
+        self.imageHelperCanvasContext = canvas.getContext('2d');
+        self.imageHelperCanvasContext.mozImageSmoothingEnabled = false;
+        self.imageHelperCanvasContext.msImageSmoothingEnabled = false;
+        self.imageHelperCanvasContext.imageSmoothingEnabled = false;
+      }
+      /**
+       * Return the image cropped as Base64 data URL
+       */
+      function getAsDataURL(quality) {
+        if (!quality) { quality = 1; }
+        return self.canvas.toDataURL(quality);
+      }
+    }
+  })(window, jQuery);
+
+
+
+  $(function () {
+
+    /**
+         * DEMO
+         */
+    p = new profilePicture('.profile', null,
+      {
+        imageHelper: true,
+        onRemove: function (type) {
+          $('.preview').hide().attr('src', '');
+        },
+        onError: function (type) {
+          console.log('Error type: ' + type);
+        }
+      });
+
+
+
+  });
+
+
+  $('#user-form').on('submit', function () {
+    var csrf_token = "{{ csrf_token }}";
+    var newimage = new Image();
+    var url = $("#Url").attr("data-url");
+    var image = p.getAsDataURL();
+    var images = image.replace('data:image/jpeg;base64,', '');
+    newimage.src = image;
+    document.body.appendChild(newimage);
+    formData = new FormData();
+    formData.append('image', images);
+    if (filename) {
+      formData.append('name', filename);
+    }
+    formData.append('csrfmiddlewaretoken', csrf_token);
+    console.log(formData);
+    $.ajax({
+      url: url,
+      data: formData,
+      processData: false,
+      type: 'POST',
+      cache: false,
+      contentType: false,
+      processData: false,
+      success: function (data) {
+
+      }
+    });
+
+
+  });
+
+
+
+
+</script>
+
+{% endblock main %}

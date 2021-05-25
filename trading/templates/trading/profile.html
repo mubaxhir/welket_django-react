@@ -1,0 +1,323 @@
+{% extends 'trading/base.html' %}
+
+{% load static %}
+
+{% load break %}
+
+{% block main %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-2"></div>
+
+    <div class="col-lg-8 glass-effect" style="background-color: rgba(38,50,56, 0.7); color: white; padding: 35px;">
+      <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Profile Info</legend>
+      </fieldset>
+      <div class="content-section">
+        <div class="position-relative">
+          <div class="media user-name">
+            <img class="rounded-circle account-img" height="50px" width="auto" src="{{ user_profle.image.url }}" />
+            <div class="media-body">
+              <h2 class="account-heading">&nbsp; @{{ user_profle.user.username }}</h2>
+              <!-- <p class="text-secondary">{{ user_profle.user.email }}</p> -->
+            </div>
+          </div>
+          <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" value="{{user_profle.user.id}}" id="follow" />
+            {% if followers %}
+            <a onclick="AddToFollow({% url 'add_to_follow'  %})" id="status"
+              class="btn-follow btn btn-warning m-2 send-message-btn">Following</a>
+            {% elif followers is None %}
+            <a onclick="AddToFollow({% url 'add_to_follow'  %})" id="status"
+              class="btn-follow btn btn-warning m-2 send-message-btn">Follow</a>
+            {% else %}
+            <a onclick="AddToFollow({% url 'add_to_follow'  %})" id="status"
+              class="btn-follow btn btn-warning m-2 send-message-btn">Follow</a>
+            {% endif %}
+        </div>
+        </form>
+
+        <div class="alert col-md-8 mt-3 alrt-blue-bg">
+          <!-- <h5>{{ user_profle.user.username }}'s followers</h5>
+          {% for i in friends %} -->
+
+          <!-- <div id="dropdownFriends" class="dropdownfriendswrap">
+            <div class="dropdown account-setting-dropdown"> -->
+              <!-- <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownfriendsButton"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                You have {{friend_List|length}} contacts
+              </button>
+              <div class="dropdown-menu-one" aria-labelledby="dropdownfriendsButton">
+                {% for i in friend_List %}
+
+                <div class="overflow-auto row user-chat-notif">
+                  <div class="col-md-12 flex-wrap-send-msg">
+                    <a href="{% url 'Userprofile' i.id   %}" class="wrap-user-block"> <img
+                        class="rounded-circle account-img" height="50px" width="auto"
+                        src="{{ user_profle.image.url }}" /> <span>
+                        <div class="user-name col-md-12">
+                          <div class="user-name-sm">
+                            <span>First Name</span>
+                            <span>Last Name</span>
+                          </div>
+                          <span>{{ i}}</span>
+                        </div>
+                      </span></a>
+                    <button onclick="showChatBox('{{request.user.id }}','{{ i.id }}',true)"
+                      class="btn btn-warning m-2 send-message-btn">Send Message</button>
+                  </div>
+                </div>
+
+                {% endfor %}
+              </div>
+            </div> -->
+   
+          <!-- </div> -->
+
+
+          <!-- {% endfor %} -->
+          <button type="button" class="follower-btn btn btn-primary" data-toggle="modal" data-target="#followermodal">
+            0 followers
+          </button>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{message.tags}} alert-dismissible">
+              <button class="close" type="button" data-dismiss="alert">×</button>
+              <i class="fa fa-warning"></i> &nbsp;&nbsp;&nbsp;{{message}}
+            </div>
+            {% endfor %}
+            {% endif %}
+          </div>
+          {% for post in posts %}
+          <div class="container" style="padding: 20px; border: 1px solid gray; color: white;">
+            <div class="row position-relative">
+              {% if post.author == request.user %}
+              <button onclick="del({% url 'delete'  %})" class="trash-ico"><i class="fa fa-trash-o"
+                  aria-hidden="true"></i></button>
+              {% endif %}
+              <div class="col-md-12 left-cell-profile">
+
+                <div class="info-box">
+                  <a href="{% url 'Userprofile' post.author.id   %}">
+                    <img class="rounded-circle pull-left" height="75px" width="auto"
+                      src="{{ post.author.profile.image.url }}" alt="Card image cap">
+                  </a>
+                  <center class="activity-block">
+                    <p class="center align-content-center">
+                      <a href="{% url 'Userprofile' post.author.id   %}">
+                        {{post.author}}
+                      </a>
+                    </p>
+                    <p class="center">{{post.time_since_posted}}</p>
+
+                  </center>
+                </div>
+                <div class="col-md-12 right-cell-profile mt-3">
+                  <p>{{ post.title }}</p>
+                  {% if post.content%}
+                  <p>{{ post.content }}</p>
+                  {% endif%}
+                  {% if post.img %}
+                  <div class="mt-3">
+                    <img src="{{post.img.url}}" style="width: 100%; height: 300px;">
+                  </div>
+                  {% endif %}
+                  {% if post.video %}
+                  <div class="mt-3">
+                    <video width="100%" height="300px" controls>
+                      <source src="{{post.video.url}}">
+                    </video>
+                  </div>
+                  {% endif %}
+
+                  <p class="share-comment-wrap pl-4">
+                    <input type="hidden" value={{post.id}} id='post' />
+                    {% if user|custom_filter:post.id %}
+                    <button onclick="like({% url 'share'  %})" id='like' value="False">
+                      <i id="icon-like" class="fa fa-thumbs-up" aria-hidden="true"></i>
+                      <span id="count-likes" class="count-likes">{{post.likes_count}}</span>
+                    </button>
+                    {% else %}
+                    <button onclick="like({% url 'share'  %})" id='like' value="True">
+                      <i id="icon-like" class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                      <span id="count-likes" class="count-likes">{{post.likes_count}}</span>
+                    </button>
+                    {% endif %}
+
+                    <button onclick="share({{post.id}})"><i class="fa fa-share-alt" aria-hidden="true"></i></button>
+
+                    <!-- <button onclick="comment({% url 'share'  %})"><i class="fa fa-comment-o" aria-hidden="true"></i> <span class="count-comments">1223
+                      3
+                    </span>
+                    </button> -->
+
+                    <button onclick="all_comments({% url 'share'  %},{{post.id}})">
+                      <i class="fa fa-comment-o" aria-hidden="true"></i> <span
+                        class="count-comments">{{post.comments_count }}
+                      </span>
+                    </button>
+
+
+                  </p>
+
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+          <br />
+          {% endfor %}
+
+
+
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-2"></div>
+  </div>
+</div>
+
+<div class="modal fade" id="CommentModalCenter" tabindex="-1" role="dialog" aria-labelledby="CommentModalCenterTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div id="comment-body" class="modal-body">
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button> -->
+        {% include 'trading/comments.html' %}
+      </div>
+    </div>
+    <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> -->
+  </div>
+</div>
+</div>
+
+<div class="modal fade share-modal" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content col-12">
+      <div class="modal-header">
+        <h5 class="modal-title">Share</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span> </button>
+      </div>
+      {% comment %} <div class="modal-body">
+        <div class="icon-container1 d-flex">
+          <div class="smd"> <i class=" img-thumbnail fa fa-twitter fa-2x"
+              style="color:#4c6ef5;background-color: aliceblue"></i>
+            <a href="www.twitter.com" id="share-twitter-url">
+              <p>Twitter</p>
+            </a>
+          </div>
+          <div class="smd"> <i class="img-thumbnail fa fa-facebook fa-2x"
+              style="color: #3b5998;background-color: #eceff5;"></i>
+            <a href="www.facebook.com">
+              <p>Facebook</p>
+            </a>
+
+          </div>
+
+        </div>
+
+      </div> {% endcomment %}
+      <div class="modal-footer"> <label style="font-weight: 600">Page Link <span class="message"></span></label><br />
+        <div class="row"> <input class="col-10 ur" type="url" placeholder="#" id="myInput"
+            aria-describedby="inputGroup-sizing-default" style="height: 40px;"> <button class="cpy"
+            onclick="myFunction()"><i class="fa fa-clone"></i></button> </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="followermodal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+  aria-labelledby="followermodalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="followermodalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="wrap-followers-block">
+          <div class="wrap-followers-cell">
+            <div class="wrap-followers-inside">
+              <img src="https://lh3.googleusercontent.com/proxy/LJyR3ivRh8a08_dNrsok2HvfWsFL5ytqm7iXCykdV0sc1G4-3h4BpOg3DNPtM0XYbULdFnJYsZ2pQwM9SGc2oQhcB65XN60SzY845aQ8pu9am9ICo222EkpOP3rv63DGhvn2T8U09TI3MQ" class="user-badge" alt="">
+              <a href="#" class="pt-3">
+                <h2>
+                  Test
+                </h2>
+              </a>
+            </div>
+            <button class="btn btn-primary action-btn">Follow</button>
+          </div>
+          <div class="wrap-followers-cell">
+            <div class="wrap-followers-inside">
+              <img src="https://lh3.googleusercontent.com/proxy/LJyR3ivRh8a08_dNrsok2HvfWsFL5ytqm7iXCykdV0sc1G4-3h4BpOg3DNPtM0XYbULdFnJYsZ2pQwM9SGc2oQhcB65XN60SzY845aQ8pu9am9ICo222EkpOP3rv63DGhvn2T8U09TI3MQ" class="user-badge" alt="">
+              <a href="#}" class="pt-3">
+                <h2>
+                  tEST2
+                </h2>
+              </a>
+            </div>
+            <button class="btn btn-primary action-btn">Follow</button>
+          </div>
+          <div class="wrap-followers-cell">
+            <div class="wrap-followers-inside">
+              <img src="https://lh3.googleusercontent.com/proxy/LJyR3ivRh8a08_dNrsok2HvfWsFL5ytqm7iXCykdV0sc1G4-3h4BpOg3DNPtM0XYbULdFnJYsZ2pQwM9SGc2oQhcB65XN60SzY845aQ8pu9am9ICo222EkpOP3rv63DGhvn2T8U09TI3MQ" class="user-badge" alt="">
+              <a href="#" class="pt-3">
+                <h2>
+                  tEST3
+                </h2>
+              </a>
+            </div>
+            <button class="btn btn-primary action-btn">Follow</button>
+          </div>
+          <div class="wrap-followers-cell">
+            <div class="wrap-followers-inside">
+              <img src="https://lh3.googleusercontent.com/proxy/LJyR3ivRh8a08_dNrsok2HvfWsFL5ytqm7iXCykdV0sc1G4-3h4BpOg3DNPtM0XYbULdFnJYsZ2pQwM9SGc2oQhcB65XN60SzY845aQ8pu9am9ICo222EkpOP3rv63DGhvn2T8U09TI3MQ" class="user-badge" alt="">
+              <a href="#" class="pt-3">
+                <h2>
+                  TEST4
+                </h2>
+              </a>
+            </div>
+            <button class="btn btn-primary action-btn">Follow</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Understood</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/extra.js' %}"></script>
+<script>
+  function myFunction() {
+
+    $(".message").text("link copied");
+  }
+</script>
+
+<script>
+  $(document).ready(function () {
+    $("#dropdownfriendsButton").click(function () {
+      $(".dropdown-menu-one").toggle();
+    });
+  });
+</script>
+{% endblock %}
